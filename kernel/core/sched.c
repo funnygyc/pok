@@ -434,6 +434,7 @@ uint32_t pok_elect_thread(uint8_t new_partition_id) {
         assert(thread->time_capacity);
         thread->state = POK_STATE_RUNNABLE;
         thread->is_use = 0;
+        thread->absolute_deadline = thread->absolute_deadline + thread->next_activation;
         thread->remaining_time_capacity = thread->time_capacity;
         thread->next_activation = thread->next_activation + thread->period;
         //printf("thread active");
@@ -924,8 +925,8 @@ uint32_t pok_sched_part_edf(const uint32_t index_low, const uint32_t index_high,
   do {
     if (pok_threads[i].state == POK_STATE_RUNNABLE &&
         pok_threads[i].processor_affinity == current_proc &&
-        pok_threads[i].deadline < min_ddl) {
-      min_ddl = pok_threads[i].deadline;
+        pok_threads[i].absolute_deadline < min_ddl) {
+      min_ddl = pok_threads[i].absolute_deadline;
       max_thread = i;
     }
     i++;

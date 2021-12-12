@@ -78,6 +78,7 @@ void pok_idle_thread_init() {
     pok_threads[IDLE_THREAD - i].weight = 0;
     pok_threads[IDLE_THREAD - i].space_capacity = 0;
     pok_threads[IDLE_THREAD - i].is_use = 0;
+    pok_threads[IDLE_THREAD - i].absolute_deadline = 0;
     pok_threads[IDLE_THREAD - i].wakeup_time = 0;
     pok_threads[IDLE_THREAD - i].entry = pok_arch_idle;
     pok_threads[IDLE_THREAD - i].processor_affinity = i;
@@ -121,6 +122,7 @@ void pok_thread_init(void) {
     pok_threads[i].weight= 0;
     pok_threads[i].space_capacity= 0;
     pok_threads[i].is_use = 0;
+    pok_threads[i].absolute_deadline = 0;
     pok_threads[i].wakeup_time = 0;
     pok_threads[i].state = POK_STATE_STOPPED;
     pok_threads[i].processor_affinity = 0;
@@ -174,6 +176,7 @@ pok_ret_t pok_partition_thread_create(uint32_t *thread_id,
 
   if (attr->deadline > 0) {
     pok_threads[id].deadline = attr->deadline;
+    pok_threads[id].absolute_deadline = attr->deadline;
     //printf("%d deadline = %lld\n",id,pok_threads[id].deadline);
     //printf("%d weight = %d\n",id,attr->weight);
   }

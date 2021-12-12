@@ -66,6 +66,7 @@ typedef struct {
   int32_t weight;
   uint64_t arrive_time;
   int64_t remaining_time_slices;
+  uint64_t absolute_deadline;
   /* stack pointer
    * FIXME: this is platform-dependent code, we have to handle that ! */
 } pok_thread_t;
@@ -84,6 +85,7 @@ typedef struct {
   int32_t weight;
   int space_capacity;
   int is_use;
+  uint64_t absolute_deadline;
 } pok_thread_attr_t;
 /*
  * Attributes given to create a thread

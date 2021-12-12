@@ -71,7 +71,10 @@ extern void pok_port_flush_partition(uint8_t);
 #endif
 
 int current_weight = 0;
+uint64_t pok_sched_slots_remaining_time[POK_CONFIG_SCHEDULING_NBSLOTS] = 
+    (uint64_t[])POK_CONFIG_SCHEDULING_SLOTS;
 #define SPACE_CAPACITY 100
+#define POK_PARTITION_TIME_SLICE 3687600000
 uint32_t nbslots = POK_CONFIG_SCHEDULING_NBSLOTS;
 uint64_t pok_sched_slots[POK_CONFIG_SCHEDULING_NBSLOTS] =
     (uint64_t[])POK_CONFIG_SCHEDULING_SLOTS;
@@ -179,6 +182,20 @@ void pok_sched_init(void) {
             pok_sched_slots_allocation[slot] =  current_slot;
             current_slot = (current_slot+1) % nbslots;
          }
+         pok_sched_current_slot = 0;
+         pok_sched_next_major_frame = POK_CONFIG_SCHEDULING_MAJOR_FRAME;
+         if(pok_sched_slots_remaining_time[0] > POK_PARTITION_TIME_SLICE){
+            pok_sched_next_deadline = POK_PARTITION_TIME_SLICE;
+            pok_sched_slots_remaining_time[0] -= POK_PARTITION_TIME_SLICE;
+         }
+         else{
+           pok_sched_next_deadline = pok_sched_slots_remaining_time[0];
+           pok_sched_slots_remaining_time[0] = 0;
+         }         
+         pok_sched_next_flush = 0;
+         pok_current_partition = pok_sched_slots_allocation[0];
+
+
          break;
       case POK_SCHED_PRIORITY:
         for (slot = 0; slot < nbslots; slot++)
@@ -298,7 +315,7 @@ void pok_sched_init(void) {
 
 
 
-  if(POK_CONFIG_SCHEDULER_FOR_PARTITIONS !=POK_SCHED_WRR)
+  if(POK_CONFIG_SCHEDULER_FOR_PARTITIONS !=POK_SCHED_WRR && POK_CONFIG_SCHEDULER_FOR_PARTITIONS !=POK_SCHED_RR)
   {
     //printf("%d\n", pok_current_partition);
     pok_sched_current_slot = 0;
@@ -376,6 +393,31 @@ uint8_t pok_elect_partition() {
         pok_sched_current_slot = i;
         pok_sched_next_deadline =
           pok_sched_next_deadline + pok_sched_slots[pok_sched_current_slot];
+
+    }
+    else if(POK_CONFIG_SCHEDULER_FOR_PARTITIONS == POK_SCHED_RR){
+      uint8_t i = pok_sched_current_slot;
+      uint8_t j = 0;
+      uint8_t k = 0;
+      do{
+        i++;
+        j++;
+        if(j>POK_CONFIG_SCHEDULING_NBSLOTS){
+          for(k=0;k<POK_CONFIG_SCHEDULING_NBSLOTS;k++)
+            pok_sched_slots_remaining_time[k] = pok_sched_slots[k];
+        }
+        if(pok_sched_slots_remaining_time[i] > 0)
+          break;
+      }while(TRUE);
+      pok_sched_current_slot = i;
+      if(pok_sched_slots_remaining_time[pok_sched_current_slot] > POK_PARTITION_TIME_SLICE){
+        pok_sched_next_deadline = pok_sched_next_deadline + POK_PARTITION_TIME_SLICE;
+        pok_sched_slots_remaining_time[pok_sched_current_slot] -= POK_PARTITION_TIME_SLICE;
+      }
+      else{
+        pok_sched_next_deadline = pok_sched_next_deadline + pok_sched_slots_remaining_time[pok_sched_current_slot];
+        pok_sched_slots_remaining_time[pok_sched_current_slot] = 0;
+      }
 
     }
     else{

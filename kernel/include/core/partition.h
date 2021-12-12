@@ -120,6 +120,8 @@ typedef struct {
 
   uint32_t lock_level;
   pok_start_condition_t start_condition;
+  int32_t current_weight;
+  int current_space_capacity;
 } pok_partition_t;
 
 #define CURRENT_THREAD(partition) (partition).current_thread[pok_get_proc_id()]

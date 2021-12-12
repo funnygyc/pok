@@ -1,0 +1,12 @@
+{
+    "files.associations": {
+        "instrumentation.h": "c",
+        "dependencies.h": "c",
+        "debug.h": "c",
+        "errno.h": "c",
+        "limits": "cpp",
+        "syscall.h": "c"
+    },
+    "C_Cpp.dimInactiveRegions": false,
+    "C_Cpp.errorSquiggles": "Disabled"
+}

@@ -17,10 +17,12 @@
 #include <arch.h>
 #include <core/syscall.h>
 #include <core/thread.h>
+#include <libc/stdio.h>
 #include <types.h>
 
 pok_ret_t pok_thread_create(uint32_t *thread_id,
                             const pok_thread_attr_t *attr) {
+  //printf("threadcreate %d\n",(int)attr);
   return pok_syscall2(POK_SYSCALL_THREAD_CREATE, (uint32_t)thread_id,
                       (uint32_t)attr);
 }

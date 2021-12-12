@@ -61,7 +61,24 @@ void pok_partition_setup_scheduler(const uint8_t pid) {
     pok_partitions[pid].sched_func = &pok_sched_part_static;
     break;
 #endif // POK_NEEDS_SCHED_STATIC
+  case POK_SCHED_EDF:
+    pok_partitions[pid].sched_func = &pok_sched_part_edf;
+    break;
+  case POK_SCHED_PRIORITY:
+    pok_partitions[pid].sched_func = &pok_sched_part_priority;
+    break;
 
+  case POK_SCHED_NEWRR:
+    pok_partitions[pid].sched_func = &pok_sched_part_newrr;
+    break;
+
+  case POK_SCHED_WRR:
+    pok_partitions[pid].sched_func = &pok_sched_part_wrr;
+    break;
+    
+  case POK_SCHED_MRC:
+    pok_partitions[pid].sched_func = &pok_sched_part_mrc;
+    break;
     /*
      * Default scheduling algorithm is Round Robin.
      * Yes, it sucks
@@ -100,6 +117,8 @@ void pok_partition_reinit(const uint8_t pid) {
   pok_partitions[pid].error_status.failed_addr = 0;
   pok_partitions[pid].error_status.error_kind = POK_ERROR_KIND_INVALID;
   pok_partitions[pid].error_status.msg_size = 0;
+  pok_partitions[pid].current_weight = 0;
+  pok_partitions[pid].current_space_capacity = 0;
 
   pok_loader_load_partition(
       pid, pok_partitions[pid].base_addr - pok_partitions[pid].base_vaddr,
@@ -123,6 +142,11 @@ void pok_partition_setup_main_thread(const uint8_t pid) {
   attr.period = INFINITE_TIME_VALUE;
   attr.time_capacity = INFINITE_TIME_VALUE;
   attr.processor_affinity = 0;
+  attr.weight = 0;
+  attr.is_use = 0;
+  attr.space_capacity = 0;
+  
+  //printf("weight %d\n",attr.weight );
 
   pok_partition_thread_create(&main_thread, &attr, pid);
   pok_partitions[pid].thread_main = main_thread;

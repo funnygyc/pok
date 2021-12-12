@@ -34,6 +34,8 @@ typedef struct {
   uint64_t time_capacity;
   uint32_t stack_size;
   uint32_t state;
+  int32_t weight;
+  int space_capacity;  
 } pok_thread_attr_t;
 
 void pok_thread_init(void);

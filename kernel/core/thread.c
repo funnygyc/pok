@@ -74,6 +74,10 @@ void pok_idle_thread_init() {
     pok_threads[IDLE_THREAD - i].time_capacity = INFINITE_TIME_VALUE;
     pok_threads[IDLE_THREAD - i].next_activation = 0;
     pok_threads[IDLE_THREAD - i].remaining_time_capacity = INFINITE_TIME_VALUE;
+    pok_threads[IDLE_THREAD - i].remaining_time_slices = 0;
+    pok_threads[IDLE_THREAD - i].weight = 0;
+    pok_threads[IDLE_THREAD - i].space_capacity = 0;
+    pok_threads[IDLE_THREAD - i].is_use = 0;
     pok_threads[IDLE_THREAD - i].wakeup_time = 0;
     pok_threads[IDLE_THREAD - i].entry = pok_arch_idle;
     pok_threads[IDLE_THREAD - i].processor_affinity = i;
@@ -112,7 +116,11 @@ void pok_thread_init(void) {
     pok_threads[i].deadline = 0;
     pok_threads[i].time_capacity = INFINITE_TIME_VALUE;
     pok_threads[i].remaining_time_capacity = INFINITE_TIME_VALUE;
+    pok_threads[i].remaining_time_slices = TIME_SLICES;
     pok_threads[i].next_activation = 0;
+    pok_threads[i].weight= 0;
+    pok_threads[i].space_capacity= 0;
+    pok_threads[i].is_use = 0;
     pok_threads[i].wakeup_time = 0;
     pok_threads[i].state = POK_STATE_STOPPED;
     pok_threads[i].processor_affinity = 0;
@@ -166,6 +174,24 @@ pok_ret_t pok_partition_thread_create(uint32_t *thread_id,
 
   if (attr->deadline > 0) {
     pok_threads[id].deadline = attr->deadline;
+    //printf("%d deadline = %lld\n",id,pok_threads[id].deadline);
+    //printf("%d weight = %d\n",id,attr->weight);
+  }
+  if (attr->time_capacity > 0) {
+    pok_threads[id].weight = attr->time_capacity;
+    //printf("%d weight = %d\n",id,pok_threads[id].weight);
+    //printf("%d weight = %d\n",id,attr->weight);
+  }
+  
+  /*if (attr->stack_size > 0) {
+    pok_threads[id].next_activation = attr->stack_size;
+    //printf("%d weight1 = %d    ",id,attr->weight);
+    //printf("%d weight2 = %d\n",id,attr->stack_size);
+  }*/
+  if (attr->processor_affinity > 0) {
+    pok_threads[id].space_capacity = attr->processor_affinity;
+    //printf("%d weight = %d\n",id,pok_threads[id].weight);
+    //printf("%d space capacity = %d\n",id,attr->processor_affinity);
   }
 
   if (attr->time_capacity > 0) {
@@ -177,7 +203,7 @@ pok_ret_t pok_partition_thread_create(uint32_t *thread_id,
   }
 
   pok_threads[id].processor_affinity =
-      get_proc_real_id(partition_id, attr->processor_affinity);
+      get_proc_real_id(partition_id, (uint8_t)0);
 
   assert(multiprocessing_system
              ? pok_threads[id].processor_affinity < multiprocessing_system
@@ -207,6 +233,16 @@ pok_ret_t pok_partition_thread_create(uint32_t *thread_id,
   pok_threads[id].entry = attr->entry;
   pok_threads[id].init_stack_addr = stack_vaddr;
   *thread_id = id;
+  
+  if (attr->stack_size > 8 && attr->stack_size < 15) {
+    pok_threads[id].next_activation = (attr->stack_size + 1) * 184380000ULL;
+    pok_threads[id].state = POK_STATE_WAIT_NEXT_ACTIVATION;
+    //printf("stacksize %d ddl %lld period %lld pri %d aff %d state %d cap %lld weight %d\n",attr->stack_size,attr->deadline,attr->period,attr->priority,attr->processor_affinity,attr->state,attr->time_capacity,attr->weight);
+  }
+  if(attr->processor_affinity > 0){
+
+
+  }
 
 #ifdef POK_NEEDS_SCHED_RMS
   if ((pok_partitions[partition_id].sched == POK_SCHED_RMS) &&
@@ -335,10 +371,12 @@ pok_ret_t pok_thread_get_status(const uint32_t id, pok_thread_attr_t *attr) {
   attr->priority = pok_threads[id].priority;
   attr->entry = pok_threads[id].entry;
   attr->period = pok_threads[id].period;
+  attr->weight = pok_threads[id].weight;
   attr->time_capacity = pok_threads[id].time_capacity;
   attr->stack_size = POK_USER_STACK_SIZE;
   attr->processor_affinity = get_proc_partition_id(
       POK_SCHED_CURRENT_PARTITION, pok_threads[id].processor_affinity);
+  
   return POK_ERRNO_OK;
 }
 

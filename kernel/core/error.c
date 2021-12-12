@@ -30,7 +30,7 @@ pok_ret_t pok_error_thread_create(uint32_t stack_size, void *entry) {
   attr.priority = POK_THREAD_MAX_PRIORITY;
   attr.entry = entry;
   attr.time_capacity = 10000;
-
+  //printf("error\n");
   ret = pok_partition_thread_create(&tid, &attr, POK_SCHED_CURRENT_PARTITION);
 
   POK_CURRENT_PARTITION.thread_error = tid;

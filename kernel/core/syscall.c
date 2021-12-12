@@ -146,7 +146,8 @@ pok_ret_t pok_core_syscall(const pok_syscall_id_t syscall_id,
     CHECK_PTR((void *)args->arg1, sizeof(uint32_t));
 
     CHECK_PTR((void *)args->arg2, sizeof(pok_thread_attr_t));
-
+    //pok_thread_attr_t *tmp = (pok_thread_attr_t *)(args->arg2 + infos->base_addr);
+    //printf("weight point1 : %d size %d\n",tmp->weight,tmp->stack_size);
     return pok_partition_thread_create(
         (uint32_t *)(args->arg1 + infos->base_addr),
         (pok_thread_attr_t *)(args->arg2 + infos->base_addr),

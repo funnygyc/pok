@@ -13,6 +13,8 @@
  */
 
 #include <core/syscall.h>
+#include <core/thread.h>
+#include <libc/stdio.h>
 #include <types.h>
 
 pok_ret_t pok_do_syscall(pok_syscall_id_t syscall_id,
@@ -23,6 +25,10 @@ pok_ret_t pok_do_syscall(pok_syscall_id_t syscall_id,
 
   args_addr = (uint32_t)args;
   id = (uint32_t)syscall_id;
+
+  //pok_thread_attr_t *attr = (pok_thread_attr_t *)(args->arg2);
+  //if (args->nargs == 2)
+  //  printf("weight point2: %d\n", (int)args->arg2);
 
   asm volatile("movl %1,%%eax \n\t"
                "movl %2,%%ebx \n\t"

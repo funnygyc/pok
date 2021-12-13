@@ -88,6 +88,11 @@ uint8_t pok_config_partition_deadline[POK_CONFIG_SCHEDULING_NBSLOTS] =
     (uint8_t[])POK_CONFIG_PARTITIONS_DEADLINE;
 uint8_t pok_config_partition_weight[POK_CONFIG_SCHEDULING_NBSLOTS] =
     (uint8_t[])POK_CONFIG_PARTITIONS_WEIGHT;
+/*typedef struct {
+  uint64_t time_capacity;
+  
+
+}pok_config_partition;*/
 
 uint64_t pok_sched_next_deadline;
 uint64_t pok_sched_next_major_frame;
@@ -148,6 +153,31 @@ static int32_t get_max_partition_weight(uint32_t index_low, uint32_t index_high)
    //printf("%d\n", max_weight);
    return max_weight;
 }
+void uint8_t_swap(uint8_t *a, uint8_t *b)
+{
+    uint8_t temp;
+    temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+void uint64_t_swap(uint64_t *a, uint64_t *b)
+{
+    uint64_t temp;
+    temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+void partition_content_swap(uint8_t a,uint8_t b)
+{
+    uint8_t_swap(&pok_sched_slots_allocation[a],&pok_sched_slots_allocation[b]);
+    uint8_t_swap(&pok_config_partition_priority[a],&pok_config_partition_priority[b]);
+    uint8_t_swap(&pok_config_partition_period[a],&pok_config_partition_period[b]);
+    uint8_t_swap(&pok_config_partition_deadline[a],&pok_config_partition_deadline[b]);
+    uint8_t_swap(&pok_config_partition_weight[a],&pok_config_partition_weight[b]);
+    uint64_t_swap(&pok_sched_slots[a],&pok_sched_slots[b]);
+}
 
 void pok_sched_init(void) {
   /*
@@ -172,8 +202,6 @@ void pok_sched_init(void) {
   }
 
   uint8_t i = 0;
-  uint8_t temp8 = 0;
-  uint64_t temp64 = 0;
   uint32_t current_slot = 0;
    switch (POK_CONFIG_SCHEDULER_FOR_PARTITIONS){
       case POK_SCHED_RR:
@@ -204,31 +232,13 @@ void pok_sched_init(void) {
             current_slot = (current_slot+1) % nbslots;
         }
         i = 0;
-        temp8 = 0;
-        temp64 = 0;
+
         for (slot = nbslots-1; slot > 0; slot--)
         {
           for (i =0; i < slot ; i++){
               if( pok_config_partition_priority[i] < pok_config_partition_priority[i+1] )
               {
-                temp8 = pok_sched_slots_allocation[i];
-                pok_sched_slots_allocation[i] =pok_sched_slots_allocation[i+1];
-                pok_sched_slots_allocation[i+1] = temp8;
-                temp8 = pok_config_partition_priority[i];
-                pok_config_partition_priority[i] = pok_config_partition_priority[i+1];
-                pok_config_partition_priority[i+1] = temp8;
-                temp8 = pok_config_partition_period[i];
-                pok_config_partition_period[i] = pok_config_partition_period[i+1];
-                pok_config_partition_period[i+1] = temp8;
-                temp8 = pok_config_partition_deadline[i];
-                pok_config_partition_deadline[i] = pok_config_partition_deadline[i+1];
-                pok_config_partition_deadline[i+1] = temp8;
-                temp8 = pok_config_partition_weight[i];
-                pok_config_partition_weight[i] = pok_config_partition_weight[i+1];
-                pok_config_partition_weight[i+1] = temp8;
-                temp64 = pok_sched_slots[i];
-                pok_sched_slots[i] = pok_sched_slots[i+1];
-                pok_sched_slots[i+1] = temp64;
+                partition_content_swap(i,i+1);
               }
           }
         }
@@ -241,31 +251,13 @@ void pok_sched_init(void) {
             current_slot = (current_slot + 1) % nbslots;
         }
         i = 0;
-        temp8 = 0;
-        temp64 = 0;
+
         for (slot = nbslots-1; slot > 0; slot--)
         {
           for (i =0; i < slot ; i++){
               if( pok_config_partition_deadline[i] > pok_config_partition_deadline[i+1] )
               {
-                temp8 = pok_sched_slots_allocation[i];
-                pok_sched_slots_allocation[i] =pok_sched_slots_allocation[i+1];
-                pok_sched_slots_allocation[i+1] = temp8;
-                temp8 = pok_config_partition_priority[i];
-                pok_config_partition_priority[i] = pok_config_partition_priority[i+1];
-                pok_config_partition_priority[i+1] = temp8;
-                temp8 = pok_config_partition_period[i];
-                pok_config_partition_period[i] = pok_config_partition_period[i+1];
-                pok_config_partition_period[i+1] = temp8;
-                temp8 = pok_config_partition_deadline[i];
-                pok_config_partition_deadline[i] = pok_config_partition_deadline[i+1];
-                pok_config_partition_deadline[i+1] = temp8;
-                temp8 = pok_config_partition_weight[i];
-                pok_config_partition_weight[i] = pok_config_partition_weight[i+1];
-                pok_config_partition_weight[i+1] = temp8;
-                temp64 = pok_sched_slots[i];
-                pok_sched_slots[i] = pok_sched_slots[i+1];
-                pok_sched_slots[i+1] = temp64;
+                partition_content_swap(i,i+1);
               }
           }
         }

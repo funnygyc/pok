@@ -18,7 +18,7 @@
 #define POK_CONFIG_PARTITIONS_SCHEDULER                                        \
   { POK_SCHED_PRIORITY, POK_SCHED_PRIORITY }
 //partition scheduler
-#define POK_CONFIG_SCHEDULER_FOR_PARTITIONS POK_SCHED_RR
+#define POK_CONFIG_SCHEDULER_FOR_PARTITIONS POK_SCHED_PRIORITY
 
 #define POK_CONFIG_PARTITIONS_SIZE                                             \
   { 133120, 133120 }

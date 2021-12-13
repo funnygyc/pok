@@ -30,10 +30,10 @@ int main() {
   printf("[P1] pok_sem_create return=%d, mid=%d\n", ret, sid);
 
   tattr.priority = 3;
-  tattr.period = 100ULL * TIME_SLICE;
-  tattr.time_capacity = 2;
-  tattr.deadline = 12;
-  tattr.weight = 2;
+  tattr.period = 60ULL * TIME_SLICE;
+  tattr.time_capacity = 4;
+  tattr.deadline = 18;
+  tattr.weight = 4;
   //tattr.stack_size = 5;
   tattr.entry = pinger_job1;
   //tattr.processor_affinity = 60;
@@ -41,11 +41,11 @@ int main() {
   ret = pok_thread_create(&tid, &tattr);
   printf("[P1] pok_thread_create (1) return=%d\n", ret);
 
-  tattr.priority = 1;
-  tattr.period = 100ULL * TIME_SLICE;
-  tattr.time_capacity = 3;
-  tattr.deadline = 9;
-  tattr.weight = 3;
+  tattr.priority = 4;
+  tattr.period = 60ULL * TIME_SLICE;
+  tattr.time_capacity = 6;
+  tattr.deadline = 14;
+  tattr.weight = 6;
   //tattr.stack_size = 6;
   tattr.entry = pinger_job2;
   //tattr.processor_affinity = 60;
@@ -54,10 +54,10 @@ int main() {
   printf("[P1] pok_thread_create (2) return=%d\n", ret);
 
   tattr.priority = 2;
-  tattr.period = 100ULL * TIME_SLICE;
-  tattr.time_capacity = 4;
-  tattr.deadline = 13;
-  tattr.weight = 4;
+  tattr.period = 30ULL * TIME_SLICE;
+  tattr.time_capacity = 5;
+  tattr.deadline = 22;
+  tattr.weight = 5;
   //tattr.stack_size = 7;
   tattr.entry = pinger_job3;
   //tattr.processor_affinity = 150;
@@ -65,11 +65,11 @@ int main() {
   ret = pok_thread_create(&tid, &tattr);
   printf("[P1] pok_thread_create (3) return=%d\n", ret);
 
-  tattr.priority = 4;
-  tattr.period = 100ULL * TIME_SLICE;
-  tattr.time_capacity = 5;
-  tattr.deadline = 15;
-  tattr.weight = 5;
+  tattr.priority = 1;
+  tattr.period = 30ULL * TIME_SLICE;
+  tattr.time_capacity = 3;
+  tattr.deadline = 26;
+  tattr.weight = 3;
   //tattr.stack_size = 0;
   //tattr.state = 101;
   tattr.entry = pinger_job4;

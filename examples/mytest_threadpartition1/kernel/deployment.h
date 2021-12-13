@@ -16,7 +16,7 @@
   { 7, 5 }
 //thread scheduler
 #define POK_CONFIG_PARTITIONS_SCHEDULER                                        \
-  { POK_SCHED_WRR, POK_SCHED_WRR }
+  { POK_SCHED_PRIORITY, POK_SCHED_PRIORITY }
 //partition scheduler
 #define POK_CONFIG_SCHEDULER_FOR_PARTITIONS POK_SCHED_RR
 #define POK_CONFIG_PARTITIONS_SIZE                                             \
@@ -25,10 +25,10 @@
   { 1, 1 }
 #define POK_CONFIG_PROGRAM_NAME                                                \
   { "pr1/pr1.elf", "pr2/pr2.elf" }
-#define POK_CONFIG_SCHEDULING_MAJOR_FRAME 7375200000
+#define POK_CONFIG_SCHEDULING_MAJOR_FRAME 11062800000
 #define POK_CONFIG_SCHEDULING_NBSLOTS 2
 #define POK_CONFIG_SCHEDULING_SLOTS                                            \
-  { 3687600000, 3687600000}
+  { 5531400000, 5531400000}
 #define POK_CONFIG_SCHEDULING_SLOTS_ALLOCATION                                 \
   { 0, 1 }
 
@@ -38,15 +38,15 @@
    }
 #define POK_CONFIG_PARTITIONS_PERIOD \
    {                                 \
-      100, 100                         \
+      30, 30                         \
    }
 #define POK_CONFIG_PARTITIONS_DEADLINE \
    {                                   \
-      18, 20                           \
+      29, 30                           \
    }
 #define POK_CONFIG_PARTITIONS_WEIGHT \
    {                                 \
-      3, 4                           \
+      2, 1                          \
    }
 
 #define POK_NEEDS_CONSOLE 1

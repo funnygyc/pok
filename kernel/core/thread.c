@@ -147,6 +147,7 @@ pok_ret_t pok_partition_thread_create(uint32_t *thread_id,
       (pok_partitions[partition_id].mode != POK_PARTITION_MODE_INIT_WARM)) {
     return POK_ERRNO_MODE;
   }
+  uint64_t now = POK_GETTICK();
 
   // TODO: this looks suspicious
   uint32_t id = pok_partitions[partition_id].thread_index_low +
@@ -176,8 +177,8 @@ pok_ret_t pok_partition_thread_create(uint32_t *thread_id,
 
   if (attr->deadline > 0) {
     pok_threads[id].deadline = attr->deadline;
-    pok_threads[id].absolute_deadline = attr->deadline;
-    //printf("%d deadline = %lld\n",id,pok_threads[id].deadline);
+    pok_threads[id].absolute_deadline = attr->deadline * 184380000ULL + now;
+    //printf("%d deadline = %lld\n",id,pok_threads[id].absolute_deadline);
     //printf("%d weight = %d\n",id,attr->weight);
   }
   if (attr->time_capacity > 0) {

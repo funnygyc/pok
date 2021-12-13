@@ -70,6 +70,7 @@ extern void pok_port_flushall(void);
 extern void pok_port_flush_partition(uint8_t);
 #endif
 
+#define TIME_SLICE 184380000
 int current_weight = 0;
 uint64_t pok_sched_slots_remaining_time[POK_CONFIG_SCHEDULING_NBSLOTS] = 
     (uint64_t[])POK_CONFIG_SCHEDULING_SLOTS;
@@ -242,6 +243,7 @@ void pok_sched_init(void) {
               }
           }
         }
+        
         break;
 
       case POK_SCHED_EDF:
@@ -441,7 +443,7 @@ uint8_t pok_elect_partition() {
 uint32_t pok_elect_thread(uint8_t new_partition_id) {
   uint64_t now = POK_GETTICK();
   pok_partition_t *new_partition = &(pok_partitions[new_partition_id]);
-  //printf("now : %lld\n",now);
+  //printf("now : %lld\n",now/184380000ULL);
   /*
    * We unlock all WAITING threads if the waiting time is passed
    */
@@ -468,11 +470,13 @@ uint32_t pok_elect_thread(uint8_t new_partition_id) {
         assert(thread->time_capacity);
         thread->state = POK_STATE_RUNNABLE;
         thread->is_use = 0;
-        thread->absolute_deadline = thread->absolute_deadline + thread->next_activation;
+        thread->absolute_deadline = thread->absolute_deadline + now;
         thread->remaining_time_capacity = thread->time_capacity;
         thread->next_activation = thread->next_activation + thread->period;
         //printf("thread active");
       }
+      if((thread->state == POK_STATE_RUNNABLE) && (thread->absolute_deadline < now))
+        printf("thread %d ddl miss! absoluteddl %lld \n",new_partition->thread_index_low + i, thread->absolute_deadline/TIME_SLICE);
     }
   }
 

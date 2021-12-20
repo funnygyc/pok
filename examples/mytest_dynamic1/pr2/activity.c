@@ -12,11 +12,52 @@
  *                                      Copyright (c) 2007-2021 POK team
  */
 
+#include <core/semaphore.h>
 #include <core/thread.h>
 #include <libc/stdio.h>
-void *pinger_job() {
+#include <types.h>
+
+void *pinger_job1() {
+  int flag = 1;
   while (1) {
-    printf("P2T1: begin of task\n");
-    pok_thread_sleep(5000000);
+    if(flag == 1){
+      printf("P2T1\n");
+      flag = 0;
+    }
+    
+    //pok_thread_sleep(20000000);
+  }
+}
+
+void *pinger_job2() {
+  int flag = 1;
+  while (1) {
+    if(flag == 1){
+      printf("P2T2\n");
+      flag = 0;
+    }
+    //pok_thread_sleep(20000000);
+  }
+}
+void *pinger_job3() {
+  int flag = 1;
+  while (1) {
+    if(flag == 1){
+      printf("P2T3\n");
+      flag = 0;
+    }
+    
+    //pok_thread_sleep(20000000);
+  }
+}
+void *pinger_job4() {
+  int flag = 1;
+  while (1) {
+    if(flag == 1){
+      printf("P2T4\n");
+      flag = 0;
+    }
+    
+    //pok_thread_sleep(20000000);
   }
 }

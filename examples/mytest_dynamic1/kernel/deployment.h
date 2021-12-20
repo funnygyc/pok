@@ -16,7 +16,7 @@
   { 7, 5 }
 //thread scheduler
 #define POK_CONFIG_PARTITIONS_SCHEDULER                                        \
-  { POK_SCHED_PRIORITY, POK_SCHED_STATIC }
+  { POK_SCHED_PRIORITY, POK_SCHED_PRIORITY }
 //partition scheduler
 #define POK_CONFIG_SCHEDULER_FOR_PARTITIONS POK_SCHED_RR
 

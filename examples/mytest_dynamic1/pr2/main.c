@@ -14,23 +14,69 @@
 
 #include "activity.h"
 #include <core/partition.h>
+#include <core/semaphore.h>
 #include <core/thread.h>
 #include <libc/stdio.h>
 #include <types.h>
+#define TIME_SLICE 184380000
+uint8_t sid;
 
 int main() {
   uint32_t tid;
   int ret;
   pok_thread_attr_t tattr;
 
-  tattr.priority = 42;
-  tattr.period = 10;
+  //ret = pok_sem_create(&sid, 0, 50, POK_QUEUEING_DISCIPLINE_DEFAULT);
+  //printf("[P2] pok_sem_create return=%d, mid=%d\n", ret, sid);
+
+  tattr.priority = 1;
+  tattr.period = 100ULL * TIME_SLICE;
+  tattr.time_capacity = 2;
+  tattr.deadline = 13;
+  tattr.weight = 2;
+  //tattr.stack_size = 5;
+  tattr.entry = pinger_job1;
+  //tattr.processor_affinity = 60;
+  
+  ret = pok_thread_create(&tid, &tattr);
+  printf("[P2] pok_thread_create (1) return=%d\n", ret);
+
+  tattr.priority = 2;
+  tattr.period = 100ULL * TIME_SLICE;
   tattr.time_capacity = 3;
-  tattr.entry = pinger_job;
-  //tattr.processor_affinity = 0;
+  tattr.deadline = 10;
+  tattr.weight = 3;
+  //tattr.stack_size = 6;
+  tattr.entry = pinger_job2;
+  //tattr.processor_affinity = 170;
 
   ret = pok_thread_create(&tid, &tattr);
-  printf("[P2] thread create returns=%d\n", ret);
+  printf("[P2] pok_thread_create (2) return=%d\n", ret);
+
+  tattr.priority = 3;
+  tattr.period = 100ULL * TIME_SLICE;
+  tattr.time_capacity = 4;
+  tattr.deadline = 15;
+  tattr.weight = 4;
+  //tattr.stack_size = 7;
+  tattr.entry = pinger_job3;
+  //tattr.processor_affinity = 50;
+
+  ret = pok_thread_create(&tid, &tattr);
+  printf("[P2] pok_thread_create (3) return=%d\n", ret);
+
+  tattr.priority = 4;
+  tattr.period = 100ULL * TIME_SLICE;
+  tattr.time_capacity = 5;
+  tattr.deadline = 14;
+  tattr.weight = 5;
+  //tattr.stack_size = 0;
+  //tattr.state = 101;
+  tattr.entry = pinger_job4;
+  //tattr.processor_affinity = 30;
+
+  ret = pok_thread_create(&tid, &tattr);
+  printf("[P2] pok_thread_create (4) return=%d\n", ret);
 
   pok_partition_set_mode(POK_PARTITION_MODE_NORMAL);
   pok_thread_wait_infinite();
